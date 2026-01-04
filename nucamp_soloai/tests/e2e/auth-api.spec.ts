@@ -1,3 +1,10 @@
+/**
+ * Auth API E2E Tests
+ * (TS04-Playwright-E2E-Testing.md)
+ *
+ * Tests for authentication API endpoints.
+ */
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Auth API Endpoints', () => {
@@ -87,7 +94,7 @@ test.describe('Auth Flow Integration (requires database)', () => {
 	// Better Auth requires Origin header for CSRF protection
 
 	const authHeaders = {
-		'Origin': 'http://localhost:5173'
+		Origin: 'http://localhost:5173'
 	};
 
 	test('full auth flow works when database is available', async ({ request }) => {
@@ -138,5 +145,25 @@ test.describe('Auth Flow Integration (requires database)', () => {
 		const session3Data = await session3.json();
 		expect(session3Data).not.toBeNull();
 		expect(session3Data.user.email).toBe(email);
+	});
+});
+
+test.describe('Billing API Endpoints', () => {
+	test('subscription endpoint requires authentication', async ({ request }) => {
+		const response = await request.get('/api/billing/subscription');
+		// Should return 401 when not authenticated
+		expect(response.status()).toBe(401);
+	});
+
+	test('billing history endpoint requires authentication', async ({ request }) => {
+		const response = await request.get('/api/billing/history');
+		// Should return 401 when not authenticated
+		expect(response.status()).toBe(401);
+	});
+
+	test('billing portal endpoint requires authentication', async ({ request }) => {
+		const response = await request.post('/api/billing/portal');
+		// Should return 401 when not authenticated
+		expect(response.status()).toBe(401);
 	});
 });

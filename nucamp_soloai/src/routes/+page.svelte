@@ -12,16 +12,16 @@
 	structuredData={structuredData}
 />
 
-<main>
-	<h1>Welcome to SoloAI SaaS</h1>
+<main data-testid="home-page">
+	<h1 data-testid="home-title">Welcome to SoloAI SaaS</h1>
 	<p>Your AI-powered business solution platform.</p>
-	<nav>
+	<nav data-testid="home-nav">
 		<ul>
-			<li><a href="/features">Features</a></li>
-			<li><a href="/pricing">Pricing</a></li>
-			<li><a href="/contact">Contact</a></li>
-			<li><a href="/login">Login</a></li>
-			<li><a href="/signup">Sign Up</a></li>
+			<li><a href="/features" data-testid="features-link">Features</a></li>
+			<li><a href="/pricing" data-testid="pricing-link">Pricing</a></li>
+			<li><a href="/contact" data-testid="contact-link">Contact</a></li>
+			<li><a href="/login" data-testid="home-login-link">Login</a></li>
+			<li><a href="/signup" data-testid="home-signup-link">Sign Up</a></li>
 		</ul>
 	</nav>
 </main>

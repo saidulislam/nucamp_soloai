@@ -172,11 +172,11 @@
 
 <Meta title={m.seo_pricing_title()} description={m.seo_pricing_description()} />
 
-<main class="min-h-screen bg-base-200 py-12">
+<main class="min-h-screen bg-base-200 py-12" data-testid="pricing-page">
 	<div class="container mx-auto px-4">
 		<!-- Header -->
 		<div class="mb-12 text-center">
-			<h1 class="text-4xl font-bold text-base-content md:text-5xl">
+			<h1 class="text-4xl font-bold text-base-content md:text-5xl" data-testid="pricing-title">
 				{m.pricing_page_title()}
 			</h1>
 			<p class="mx-auto mt-4 max-w-2xl text-lg text-base-content/70">
@@ -252,9 +252,9 @@
 		{/if}
 
 		<!-- Pricing Cards -->
-		<div class="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
+		<div class="mx-auto grid max-w-6xl gap-8 md:grid-cols-3" data-testid="pricing-cards">
 			<!-- Free Tier -->
-			<div class="card bg-base-100 shadow-xl">
+			<div class="card bg-base-100 shadow-xl" data-testid="free-tier-card">
 				<div class="card-body">
 					<h2 class="card-title text-2xl">{m.pricing_free_tier()}</h2>
 					<p class="text-base-content/70">{m.pricing_free_description()}</p>
@@ -302,7 +302,7 @@
 			</div>
 
 			<!-- Pro Tier (Most Popular) -->
-			<div class="card bg-primary text-primary-content shadow-xl ring-4 ring-primary/50">
+			<div class="card bg-primary text-primary-content shadow-xl ring-4 ring-primary/50" data-testid="pro-tier-card">
 				<div class="card-body">
 					<div class="badge badge-secondary mb-2">{m.pricing_most_popular()}</div>
 					<h2 class="card-title text-2xl">{m.pricing_pro_tier()}</h2>
@@ -347,6 +347,7 @@
 								class="btn btn-secondary btn-block"
 								disabled={isLoading !== null}
 								onclick={() => handleCheckout('pro')}
+							data-testid="pro-checkout-button"
 							>
 								{#if isLoading === 'pro'}
 									<span class="loading loading-spinner loading-sm"></span>
@@ -361,7 +362,7 @@
 			</div>
 
 			<!-- Enterprise Tier -->
-			<div class="card bg-base-100 shadow-xl">
+			<div class="card bg-base-100 shadow-xl" data-testid="enterprise-tier-card">
 				<div class="card-body">
 					<h2 class="card-title text-2xl">{m.pricing_enterprise_tier()}</h2>
 					<p class="text-base-content/70">{m.pricing_enterprise_description()}</p>
@@ -405,6 +406,7 @@
 								class="btn btn-primary btn-block"
 								disabled={isLoading !== null}
 								onclick={() => handleCheckout('enterprise')}
+							data-testid="enterprise-checkout-button"
 							>
 								{#if isLoading === 'enterprise'}
 									<span class="loading loading-spinner loading-sm"></span>

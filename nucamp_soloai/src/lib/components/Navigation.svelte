@@ -53,9 +53,9 @@
 	});
 </script>
 
-<nav class="navigation">
+<nav class="navigation" data-testid="main-navigation">
 	<!-- Desktop Navigation -->
-	<ul class="menu menu-horizontal hidden items-center gap-2 lg:flex">
+	<ul class="menu menu-horizontal hidden items-center gap-2 lg:flex" data-testid="desktop-nav">
 		{#each publicLinks as link}
 			<li>
 				<a
@@ -80,6 +80,7 @@
 			aria-label={m.menu_toggle()}
 			aria-expanded={isMobileMenuOpen}
 			class="btn btn-ghost btn-square"
+			data-testid="mobile-menu-button"
 		>
 			{#if isMobileMenuOpen}
 				<!-- Close Icon -->
@@ -107,6 +108,7 @@
 			<ul
 				tabindex="0"
 				class="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow-lg"
+				data-testid="mobile-nav-dropdown"
 			>
 				<!-- Main Navigation Links -->
 				{#each publicLinks as link}

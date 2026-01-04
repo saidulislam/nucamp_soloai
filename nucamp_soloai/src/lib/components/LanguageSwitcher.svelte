@@ -49,7 +49,7 @@
 	});
 </script>
 
-<div class="language-switcher dropdown dropdown-end">
+<div class="language-switcher dropdown dropdown-end" data-testid="language-switcher">
 	<button
 		type="button"
 		tabindex="0"
@@ -57,6 +57,7 @@
 		onclick={toggleDropdown}
 		aria-label={m.language_switcher_label()}
 		class="btn btn-ghost btn-sm flex items-center gap-2"
+		data-testid="language-switcher-button"
 	>
 		<svg
 			class="h-5 w-5"
@@ -79,6 +80,7 @@
 		<ul
 			tabindex="0"
 			class="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
+			data-testid="language-dropdown"
 		>
 			{#each locales as locale}
 				<li>

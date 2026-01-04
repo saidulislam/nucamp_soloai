@@ -37,7 +37,7 @@
 	}
 </script>
 
-<footer class="footer footer-center bg-base-200 p-10 text-base-content">
+<footer class="footer footer-center bg-base-200 p-10 text-base-content" data-testid="footer">
 	<div class="grid w-full max-w-7xl grid-flow-col gap-4 md:grid-cols-4">
 		<!-- Brand Section -->
 		<div class="md:col-span-1">
@@ -87,6 +87,7 @@
 					class="link-hover link text-left"
 					onclick={openCookieSettings}
 					aria-label={m.cookie_settings?.() || 'Cookie Settings'}
+					data-testid="cookie-settings-button"
 				>
 					{m.cookie_settings?.() || 'Cookie Settings'}
 				</button>

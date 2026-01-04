@@ -5,10 +5,10 @@
 	import AuthButton from './AuthButton.svelte';
 </script>
 
-<header class="navbar sticky top-0 z-50 border-b border-base-300 bg-base-100 shadow-sm">
+<header class="navbar sticky top-0 z-50 border-b border-base-300 bg-base-100 shadow-sm" data-testid="header">
 	<div class="navbar-start">
 		<!-- Logo/Brand -->
-		<a href="/" class="btn btn-ghost flex items-center gap-2 text-xl font-bold">
+		<a href="/" class="btn btn-ghost flex items-center gap-2 text-xl font-bold" data-testid="brand-link">
 			<div class="avatar placeholder">
 				<div class="bg-primary text-primary-content w-10 rounded-lg">
 					<svg
