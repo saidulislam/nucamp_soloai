@@ -1,0 +1,132 @@
+// Prisma Schema for SoloAI SvelteKit Application
+// Database: MySQL 8.0+ (soloai_db)
+// Generated: 2025-12-06
+// Updated: 2025-12-06 with Better Auth models (AU02-BetterAuth-Init.md)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Better Auth Models (AU02-BetterAuth-Init.md)
+// ============================================================================
+
+model user {
+  id            String    @id
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Custom fields for internationalization
+  locale        String    @default("en")
+  timezone      String    @default("UTC")
+
+  // Subscription fields (D04-Account-Billing.md)
+  subscriptionTier           String    @default("free") // free, pro, enterprise
+  subscriptionStatus         String    @default("active") // active, trial, past_due, cancelled, suspended
+  subscriptionEndDate        DateTime?
+
+  // Stripe integration fields
+  stripeCustomerId           String?   @unique
+  stripeSubscriptionId       String?   @unique
+
+  // LemonSqueezy integration fields
+  lemonSqueezyCustomerId     String?   @unique
+  lemonSqueezySubscriptionId String?   @unique
+
+  // Mautic integration fields (MA02-Mautic-API-Auth.md)
+  mauticId                   Int?      // Mautic contact ID - links to Mautic contacts
+
+  // Relations
+  sessions      session[]
+  accounts      account[]
+}
+
+model session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model account {
+  id                String   @id
+  userId            String
+  accountId         String
+  providerId        String
+  accessToken       String?  @db.Text
+  refreshToken      String?  @db.Text
+  idToken           String?  @db.Text
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope             String?
+  password          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+}
+
+// ============================================================================
+// Webhook Events (ST04-Stripe-Webhooks.md, LS04-LemonSqueezy-Webhooks.md)
+// ============================================================================
+
+// Idempotency tracking for webhooks - prevents duplicate event processing
+// Supports both Stripe and LemonSqueezy webhook events
+model webhookEvent {
+  id               String    @id @default(cuid())
+  provider         String    @default("stripe") // 'stripe' or 'lemonsqueezy'
+  eventId          String    // Provider's event ID for idempotency (Stripe event ID or LemonSqueezy event ID)
+  eventType        String    // Event type (e.g., checkout.session.completed, subscription_created)
+  processed        Boolean   @default(false)
+  processingStatus String?   // success, failed, skipped
+  errorMessage     String?   @db.Text
+  userId           String?   // Associated user ID if applicable
+  payload          String?   @db.Text // Raw event payload for debugging
+  createdAt        DateTime  @default(now())
+  processedAt      DateTime?
+
+  // Composite unique: same event ID can exist for different providers
+  @@unique([provider, eventId])
+  @@index([eventId])
+  @@index([eventType])
+  @@index([userId])
+  @@index([processed])
+  @@index([provider])
+}
+
+// ============================================================================
+// Additional custom models can be added below
+// ============================================================================

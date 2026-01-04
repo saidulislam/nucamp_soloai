@@ -1,0 +1,14 @@
+# SoloAI SaaS - Robots.txt
+# Allow crawling of all public pages
+
+User-agent: *
+Allow: /
+
+# Disallow crawling of API endpoints and internal paths
+Disallow: /api/
+Disallow: /_app/
+Disallow: /.well-known/
+
+# Sitemap location
+# TODO: Add sitemap URL when sitemap is generated
+# Sitemap: https://soloai.example.com/sitemap.xml

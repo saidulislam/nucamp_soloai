@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	html {
+		@apply antialiased;
+	}
+
+	body {
+		@apply bg-base-100 text-base-content;
+	}
+}
+
+@layer components {
+	/* Custom component classes can be added here */
+	.btn-brand {
+		@apply btn btn-primary;
+	}
+
+	.card-brand {
+		@apply card bg-base-100 shadow-xl;
+	}
+}
+
+@layer utilities {
+	/* Custom utility classes can be added here */
+	.text-balance {
+		text-wrap: balance;
+	}
+
+	/* Page transition optimizations */
+	.page-transition {
+		/* Use GPU acceleration for smooth transitions */
+		will-change: opacity;
+		transform: translateZ(0);
+		backface-visibility: hidden;
+	}
+
+	/* Respect reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+		}
+	}
+}

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="%paraglide.lang%">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#3b82f6" />
+		<meta name="msapplication-TileColor" content="#3b82f6" />
+		<meta name="theme-color" content="#ffffff" />
+
+		<!--
+			Google Tag Manager
+			(TC01-Google-Tag-Manager-Setup.md)
+
+			GTM is now loaded via GoogleTagManager.svelte component for better control.
+			This allows TC03-GDPR-Consent-Manager.md to conditionally load GTM
+			based on user locale and consent preferences.
+
+			The component-based approach enables:
+			- Locale-based consent control (US vs non-US users)
+			- Klaro consent integration for GDPR compliance
+			- Dynamic GTM container switching per environment
+
+			Original GTM snippet preserved below (commented out):
+		-->
+		<!--
+		<script>
+			(function(w,d,s,l,i){
+				if(!i) return;
+				w[l]=w[l]||[];
+				w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+				var f=d.getElementsByTagName(s)[0],
+				j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+				j.async=true;
+				j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+				f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','%sveltekit.env.PUBLIC_GTM_ID%');
+		</script>
+		-->
+
+		<!-- Mautic Tracking Script (MA02-Mautic-API-Auth.md) -->
+		<script>
+			(function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
+			w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},
+			a=d.createElement(t), m=d.getElementsByTagName(t)[0];
+			a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','%sveltekit.env.PUBLIC_MAUTIC_URL%/mtc.js','mt');
+			mt('send', 'pageview');
+		</script>
+
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!--
+			GTM noscript fallback is now handled by GoogleTagManager.svelte component.
+			This allows for consent-based loading in TC03.
+		-->
+		<!--
+		<noscript>
+			<iframe
+				src="https://www.googletagmanager.com/ns.html?id=%sveltekit.env.PUBLIC_GTM_ID%"
+				height="0"
+				width="0"
+				style="display:none;visibility:hidden"
+			></iframe>
+		</noscript>
+		-->
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>
