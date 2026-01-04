@@ -76,6 +76,14 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			);
 		}
 
+		// Validate variantId format (LemonSqueezy variant IDs are numeric)
+		if (!/^\d+$/.test(variantId)) {
+			return json<CheckoutErrorResponse>(
+				{ error: 'Invalid variantId format: must be numeric', code: 'INVALID_VARIANT_ID' },
+				{ status: 400 }
+			);
+		}
+
 		// Build success/cancel URLs
 		const successUrl = `${url.origin}/account?success=true`;
 		const cancelUrl = `${url.origin}/pricing?canceled=true`;

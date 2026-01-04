@@ -14,7 +14,7 @@
 
 import axios, { type AxiosInstance, type AxiosError } from 'axios';
 import axiosRetry from 'axios-retry';
-import { MAUTIC_BASEURL, MAUTIC_PASSWORD, MAUTIC_USERNAME } from '$env/static/private';
+import { MAUTIC_BASEURL, MAUTIC_PASSWORD, MAUTIC_USERNAME, MAUTIC_DEFAULT_SEGMENT_ID } from '$env/static/private';
 import type {
 	MauticUserData,
 	SimplifiedError,
@@ -77,7 +77,7 @@ class Mautic {
 				);
 			},
 			onRetry: (retryCount, error) => {
-				console.log(`Mautic API retry attempt ${retryCount} for: ${error.config?.url}`);
+				console.log(`[Mautic] API retry attempt ${retryCount} for: ${error.config?.url}`);
 			}
 		});
 
@@ -96,7 +96,7 @@ class Mautic {
 	 */
 	public async getUser(id: number): Promise<MauticContactResponse | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping getUser');
+			console.warn('[Mautic] Service not initialized, skipping getUser');
 			return null;
 		}
 
@@ -114,7 +114,7 @@ class Mautic {
 	 */
 	public async createUser(data: MauticUserData): Promise<MauticContactResponse | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping createUser');
+			console.warn('[Mautic] Service not initialized, skipping createUser');
 			return null;
 		}
 
@@ -139,7 +139,7 @@ class Mautic {
 		createIfNotFound: boolean = false
 	): Promise<MauticContactResponse | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping editUser');
+			console.warn('[Mautic] Service not initialized, skipping editUser');
 			return null;
 		}
 
@@ -164,7 +164,7 @@ class Mautic {
 		email: string
 	): Promise<MauticContactResponse['contact'] | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping findUserByEmail');
+			console.warn('[Mautic] Service not initialized, skipping findUserByEmail');
 			return null;
 		}
 
@@ -199,7 +199,7 @@ class Mautic {
 		contactData: MauticUserData
 	): Promise<MauticContactResponse | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping getOrCreateMauticUser');
+			console.warn('[Mautic] Service not initialized, skipping getOrCreateMauticUser');
 			return null;
 		}
 
@@ -209,7 +209,7 @@ class Mautic {
 
 			if (mauticUser) {
 				// Found by email - update existing contact
-				console.log(`Mautic: Found existing contact by email, updating ID: ${mauticUser.id}`);
+				console.log(`[Mautic] Found existing contact by email, updating ID: ${mauticUser.id}`);
 				const updated = await this.editUser(mauticUser.id, contactData, true);
 				return updated;
 			}
@@ -225,13 +225,13 @@ class Mautic {
 						// Email changed - this is a different user on same browser
 						// Create new contact to avoid overwriting different person's data
 						console.log(
-							`Mautic: Different email detected, creating new contact for: ${contactData.email}`
+							`[Mautic] Different email detected, creating new contact for: ${contactData.email}`
 						);
 						return await this.createUser(contactData);
 					} else {
 						// Same user (no email or same email), update anonymous contact
 						console.log(
-							`Mautic: Updating anonymous contact ID: ${contactData.mauticId} with email: ${contactData.email}`
+							`[Mautic] Updating anonymous contact ID: ${contactData.mauticId} with email: ${contactData.email}`
 						);
 						return await this.editUser(contactData.mauticId, contactData, true);
 					}
@@ -239,7 +239,7 @@ class Mautic {
 			}
 
 			// Step 3: No existing contact found - create new
-			console.log(`Mautic: Creating new contact for: ${contactData.email}`);
+			console.log(`[Mautic] Creating new contact for: ${contactData.email}`);
 			return await this.createUser(contactData);
 		} catch (error) {
 			this.handleError(error);
@@ -263,7 +263,7 @@ class Mautic {
 			});
 			return response.status === 200;
 		} catch (error) {
-			console.error('Mautic connection test failed:', error);
+			console.error('[Mautic] Connection test failed:', error);
 			return false;
 		}
 	}
@@ -279,7 +279,7 @@ class Mautic {
 		alias: string
 	): Promise<MauticSegmentsListResponse['lists'][string] | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping getSegmentByAlias');
+			console.warn('[Mautic] Service not initialized, skipping getSegmentByAlias');
 			return null;
 		}
 
@@ -308,13 +308,13 @@ class Mautic {
 	 */
 	public async addContactToSegment(contactId: number, segmentId: number): Promise<boolean> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping addContactToSegment');
+			console.warn('[Mautic] Service not initialized, skipping addContactToSegment');
 			return false;
 		}
 
 		try {
 			await this.client.post(`/segments/${segmentId}/contact/${contactId}/add`);
-			console.log(`Mautic: Added contact ${contactId} to segment ${segmentId}`);
+			console.log(`[Mautic] Added contact ${contactId} to segment ${segmentId}`);
 			return true;
 		} catch (error) {
 			this.handleError(error);
@@ -329,13 +329,13 @@ class Mautic {
 	 */
 	public async removeContactFromSegment(contactId: number, segmentId: number): Promise<boolean> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping removeContactFromSegment');
+			console.warn('[Mautic] Service not initialized, skipping removeContactFromSegment');
 			return false;
 		}
 
 		try {
 			await this.client.post(`/segments/${segmentId}/contact/${contactId}/remove`);
-			console.log(`Mautic: Removed contact ${contactId} from segment ${segmentId}`);
+			console.log(`[Mautic] Removed contact ${contactId} from segment ${segmentId}`);
 			return true;
 		} catch (error) {
 			this.handleError(error);
@@ -355,9 +355,10 @@ class Mautic {
 			return await this.addContactToSegment(contactId, segment.id);
 		}
 
-		// Fallback: try segment ID 1 (default created by setup script)
-		console.log('Mautic: Segment not found by alias, trying ID 1');
-		return await this.addContactToSegment(contactId, 1);
+		// Fallback: use configured default segment ID or 1
+		const defaultSegmentId = parseInt(MAUTIC_DEFAULT_SEGMENT_ID || '1', 10);
+		console.log(`[Mautic] Segment not found by alias, using default ID ${defaultSegmentId}`);
+		return await this.addContactToSegment(contactId, defaultSegmentId);
 	}
 
 	// =========================================================================
@@ -370,7 +371,7 @@ class Mautic {
 	 */
 	public async submitContactForm(data: ContactFormData): Promise<MauticContactResponse | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping submitContactForm');
+			console.warn('[Mautic] Service not initialized, skipping submitContactForm');
 			return null;
 		}
 
@@ -391,7 +392,7 @@ class Mautic {
 			const result = await this.getOrCreateMauticUser(contactData);
 
 			if (result?.contact?.id) {
-				console.log(`Mautic: Contact form submitted for ${data.email}, contact ID: ${result.contact.id}`);
+				console.log(`[Mautic] Contact form submitted for ${data.email}, contact ID: ${result.contact.id}`);
 			}
 
 			return result;
@@ -407,7 +408,7 @@ class Mautic {
 	 */
 	public async signupNewsletter(data: NewsletterSignupData): Promise<MauticContactResponse | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping signupNewsletter');
+			console.warn('[Mautic] Service not initialized, skipping signupNewsletter');
 			return null;
 		}
 
@@ -427,7 +428,7 @@ class Mautic {
 			const result = await this.getOrCreateMauticUser(contactData);
 
 			if (result?.contact?.id) {
-				console.log(`Mautic: Newsletter signup for ${data.email}, contact ID: ${result.contact.id}`);
+				console.log(`[Mautic] Newsletter signup for ${data.email}, contact ID: ${result.contact.id}`);
 
 				// Optionally add to a newsletter segment if it exists
 				const newsletterSegment = await this.getSegmentByAlias('newsletter-subscribers');
@@ -450,7 +451,7 @@ class Mautic {
 	 */
 	public async updateMarketingPreference(contactId: number, optIn: boolean): Promise<boolean> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping updateMarketingPreference');
+			console.warn('[Mautic] Service not initialized, skipping updateMarketingPreference');
 			return false;
 		}
 
@@ -461,7 +462,7 @@ class Mautic {
 				: `/contacts/${contactId}/dnc/email/add`;
 
 			await this.client.post(endpoint);
-			console.log(`Mautic: Updated marketing preference for contact ${contactId}: opt-in=${optIn}`);
+			console.log(`[Mautic] Updated marketing preference for contact ${contactId}: opt-in=${optIn}`);
 			return true;
 		} catch (error) {
 			this.handleError(error);
@@ -479,7 +480,7 @@ class Mautic {
 	 */
 	public async getEmail(emailId: number): Promise<MauticEmail | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping getEmail');
+			console.warn('[Mautic] Service not initialized, skipping getEmail');
 			return null;
 		}
 
@@ -498,7 +499,7 @@ class Mautic {
 	 */
 	public async createEmail(data: MauticEmailCreateData): Promise<MauticEmail | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping createEmail');
+			console.warn('[Mautic] Service not initialized, skipping createEmail');
 			return null;
 		}
 
@@ -521,7 +522,7 @@ class Mautic {
 		data: Partial<MauticEmailCreateData>
 	): Promise<MauticEmail | null> {
 		if (!this.initialized) {
-			console.warn('Mautic service not initialized, skipping updateEmail');
+			console.warn('[Mautic] Service not initialized, skipping updateEmail');
 			return null;
 		}
 
@@ -556,12 +557,12 @@ class Mautic {
 				simplifiedError.message = simplifiedError.errors[0].message;
 			}
 
-			console.error('Mautic API error:', simplifiedError);
+			console.error('[Mautic] API error:', simplifiedError);
 
 			// Don't throw for non-critical operations - log and continue
 			// This prevents authentication from being blocked by Mautic issues
 		} else {
-			console.error('Mautic unexpected error:', error);
+			console.error('[Mautic] Unexpected error:', error);
 		}
 	}
 }

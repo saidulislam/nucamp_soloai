@@ -20,7 +20,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { verifyWebhookSignature, getStripeOrNull } from '$lib/stripe/server';
 import { prisma } from '$lib/prisma';
-import type Stripe from 'stripe';
+import type { SubscriptionWithPeriodEnd, InvoiceWithSubscription } from '$lib/stripe/types';
 
 // ============================================================================
 // Types
@@ -36,15 +36,6 @@ interface WebhookErrorResponse {
 	error: string;
 	code?: string;
 }
-
-// Extended Stripe types for missing properties
-type SubscriptionWithPeriodEnd = Stripe.Subscription & {
-	current_period_end: number;
-};
-
-type InvoiceWithSubscription = Stripe.Invoice & {
-	subscription: string | Stripe.Subscription | null;
-};
 
 // ============================================================================
 // Webhook Handler

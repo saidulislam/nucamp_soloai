@@ -9,6 +9,24 @@
 import type Stripe from 'stripe';
 
 // ============================================================================
+// Extended Stripe Types (for properties not always exposed)
+// ============================================================================
+
+/**
+ * Subscription with current_period_end exposed
+ */
+export type SubscriptionWithPeriodEnd = Stripe.Subscription & {
+	current_period_end: number;
+};
+
+/**
+ * Invoice with subscription field exposed
+ */
+export type InvoiceWithSubscription = Stripe.Invoice & {
+	subscription: string | Stripe.Subscription | null;
+};
+
+// ============================================================================
 // Checkout Session Types
 // ============================================================================
 

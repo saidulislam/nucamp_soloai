@@ -1,3 +1,7 @@
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
+import daisyui from 'daisyui';
+
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -74,7 +78,7 @@ export default {
 			})
 		}
 	},
-	plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography'), require('daisyui')],
+	plugins: [forms, typography, daisyui],
 	daisyui: {
 		themes: [
 			{

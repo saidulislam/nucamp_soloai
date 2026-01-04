@@ -22,6 +22,7 @@ import {
 	type SubscriptionData
 } from '$lib/billing/types';
 import { getStripeOrNull } from '$lib/stripe/server';
+import { getStripeProducts } from '$lib/stripe/products';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	// Verify authentication
@@ -111,10 +112,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 			console.log('[Billing Subscription] LemonSqueezy subscription - using database data');
 		}
 
-		// If no Stripe data available but user has paid subscription, use tier-based defaults
+		// If no Stripe data available but user has paid subscription, use tier-based defaults from config
 		if (!nextBillingAmount && subscription.tier !== 'free') {
-			// Default amounts based on tier (in cents)
-			nextBillingAmount = subscription.tier === 'pro' ? 1900 : 4900;
+			const products = getStripeProducts();
+			const tierConfig = products[subscription.tier as 'pro' | 'enterprise'];
+			nextBillingAmount = tierConfig?.prices?.monthly?.amount ?? null;
 		}
 
 		const response: BillingOverviewResponse = {

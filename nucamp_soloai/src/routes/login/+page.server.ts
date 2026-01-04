@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Check if user is already authenticated via event.locals (populated in hooks.server.ts)
 	if (locals.session && locals.user) {
 		// Get the redirect URL from query parameter
-		const redirectTo = url.searchParams.get('redirect');
+		const redirectTo = url.searchParams.get('redirectTo');
 
 		// Validate redirect URL to prevent open redirect attacks
 		// Only allow relative URLs or same-origin URLs
@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	// Return redirect parameter for client-side use after login
-	const redirectParam = url.searchParams.get('redirect');
+	const redirectParam = url.searchParams.get('redirectTo');
 
 	return {
 		redirectTo: validateRedirectUrl(redirectParam, '/account')

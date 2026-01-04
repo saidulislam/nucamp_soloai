@@ -20,6 +20,7 @@ import type { RequestHandler } from './$types';
 import { getSubscriptionDataFromUser, type PortalSessionResponse } from '$lib/billing/types';
 import { PUBLIC_BASE_URL } from '$env/static/public';
 import { getStripeOrNull } from '$lib/stripe/server';
+import { getCustomerPortalUrl } from '$lib/lemonsqueezy/checkout';
 
 export const POST: RequestHandler = async ({ locals, url }) => {
 	// Verify authentication
@@ -94,25 +95,30 @@ export const POST: RequestHandler = async ({ locals, url }) => {
 			portalUrl = portalSession.url;
 			console.log(`[Billing Portal] Created Stripe portal session for customer ${stripeCustomerId}`);
 		} else if (subscription.provider === 'lemonsqueezy') {
-			// LemonSqueezy portal URL
-			// TODO: Implement LemonSqueezy Customer Portal API call when LS integration is added
-			// For now, return the LemonSqueezy billing page with return URL
-			const lsCustomerId = user.lemonSqueezyCustomerId;
-			if (!lsCustomerId) {
+			// LemonSqueezy portal URL - use SDK to get customer portal URL
+			const lsSubscriptionId = user.lemonSqueezySubscriptionId;
+			if (!lsSubscriptionId) {
 				return json(
 					{
-						error: 'No LemonSqueezy customer ID found',
-						code: 'NO_CUSTOMER_ID',
+						error: 'No LemonSqueezy subscription ID found',
+						code: 'NO_SUBSCRIPTION_ID',
 						details: 'Please subscribe to a plan first'
 					},
 					{ status: 400 }
 				);
 			}
 
-			// LemonSqueezy doesn't have a direct portal session API like Stripe
-			// They use a customer portal URL pattern
-			portalUrl = `https://app.lemonsqueezy.com/my-orders`;
-			console.log(`[Billing Portal] Redirecting to LemonSqueezy portal for customer ${lsCustomerId}`);
+			// Use LemonSqueezy SDK to get the customer portal URL
+			const lsPortalUrl = await getCustomerPortalUrl(lsSubscriptionId);
+
+			if (lsPortalUrl) {
+				portalUrl = lsPortalUrl;
+				console.log(`[Billing Portal] Retrieved LemonSqueezy portal URL for subscription ${lsSubscriptionId}`);
+			} else {
+				// Fallback to generic orders page if SDK call fails
+				portalUrl = 'https://app.lemonsqueezy.com/my-orders';
+				console.log(`[Billing Portal] Fallback to generic LemonSqueezy portal for subscription ${lsSubscriptionId}`);
+			}
 		} else {
 			return json(
 				{

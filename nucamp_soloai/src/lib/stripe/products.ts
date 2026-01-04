@@ -21,12 +21,15 @@
 
 import { env } from '$env/dynamic/private';
 import { building } from '$app/environment';
+import type { SubscriptionTier } from '$lib/billing/types';
+
+// Re-export for convenience
+export type { SubscriptionTier };
 
 // ============================================================================
 // Types
 // ============================================================================
 
-export type SubscriptionTier = 'free' | 'pro' | 'enterprise';
 export type BillingInterval = 'monthly' | 'annual';
 
 export interface ProductMetadata {
